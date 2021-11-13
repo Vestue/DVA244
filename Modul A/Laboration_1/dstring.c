@@ -1,17 +1,28 @@
+/********************************
+Ragnar Winblad von Walter, rwr21002, 199702221798
+Datastrukturer, algoritmer och programkonstruktion, DVA244
+Laboration 1.1
+*******************************/
+
 #define _CRT_SECURE_NO_WARNINGS
 #include "dstring.h"
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
 
-
 DString dstring_initialize(const char* str)
 {
 	// Precondition: str ar ej NULL
 	assert(str != NULL);
 
-	int charAmount = strlen(str) + 1;
+	/* Tips:
+	   - Allokera (t.ex. med malloc) tillrackligt med minne for att fa plats med str,
+		 glom inte att det maste finnas plats för \0 (nolltermineringen).
+		 Glom inte att testa sa att allokeringen lyckades
+	   - Det är tillatet att använda inbyggda strangfunktioner (som t.ex strcpy())
+	   - Kom ihag att anvanda assert() */
 
+	int charAmount = strlen(str) + 1;
 	DString temp = (DString)malloc(charAmount * sizeof(char));
 
 	if (temp != NULL) {
@@ -19,14 +30,7 @@ DString dstring_initialize(const char* str)
 		return temp;
 	}
 	else
-		return temp;
-
-	/* Tips:
-	   - Allokera (t.ex. med malloc) tillrackligt med minne for att fa plats med str,
-         glom inte att det maste finnas plats för \0 (nolltermineringen).
-         Glom inte att testa sa att allokeringen lyckades
-	   - Det är tillatet att använda inbyggda strangfunktioner (som t.ex strcpy())
-	   - Kom ihag att anvanda assert() */
+		return temp;	//temp returneras oavsett dÂ funktionen kr‰ver att en "DString" returneras
 
 	// Postcondition: returvardet innehaller samma strang som 'str' - behöver inte testas med assert
 }

@@ -1,3 +1,9 @@
+/*********************************************************
+Ragnar Winblad von Walter, rwr21002, 199702221798
+Datastrukturer, algoritmer och programkonstruktion, DVA244
+Laboration 1.2
+**********************************************************/
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <assert.h>
@@ -24,7 +30,6 @@ int main(void) {
 int sum(int num) {
 	if (num < 1)
 		return 0;
-
 	printf("sum(%d) anropas\n", num);
 	int fsum = num + sum(num - 1);
 	printf("sum(%d) returnerar %d\n", num, fsum);
