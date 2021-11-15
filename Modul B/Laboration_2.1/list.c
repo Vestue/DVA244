@@ -10,8 +10,20 @@
   Den nya noden (eller NULL) returneras.*/
 static struct node* createListNode(const Data data)
 {
-    //Glom inte att testa sa att allokeringen lyckades innan du initierar noden
-    return 0; //Ersatt med ratt returvarde
+    struct node* temp = (struct node*)malloc(sizeof(struct node));
+    if (temp != NULL)
+    {
+        temp->data = data;
+        temp->next = NULL;      
+        temp->previous = NULL;
+        // Pekarna next och previous initieras som NULL for att sedan kunna pekas om utifran behov
+
+        return temp;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 /*Returnera en tom lista - funktionen ar fardig*/
@@ -25,7 +37,14 @@ List createEmptyList(void)
   Returnerar 1 om den Šr tom, annars 0*/
 int isEmpty(const List list)
 {
-    return 0; //ersatt med ratt returvarde
+    if (list == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 /*Lagg till nod forst i listan*/
@@ -35,6 +54,24 @@ void addFirst(List *list, const Data data)
     //Anropa createListNode for att skapa den nya noden
     //Glom inte att testa att den nya noden faktiskt kunde skapas/tilldelas minne innan du fortsatter
     //Tank pa att listan kan vara tom nar en ny nod laggs till
+
+    struct node* newNode = createListNode(data);
+    if (newNode != NULL)
+    {
+        // Om det redan finns en nod pa forsta platsen maste den frigoras
+        if (*list != NULL) 
+        {
+            // Om det finns en nod efter forsta noden maste nya nodens next-pekare pekas om till noden efter forsta
+            if ((*list)->next != NULL)  
+            { 
+                newNode->next = (*list)->next;
+            }
+            free(*list);
+            *list = NULL;
+        }
+        (*list) = newNode;
+    }
+    assert((*list)->data == data);
 }
 
 /*Lagg till nod sist i listan
