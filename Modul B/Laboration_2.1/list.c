@@ -55,22 +55,18 @@ void addFirst(List *list, const Data data)
     //Glom inte att testa att den nya noden faktiskt kunde skapas/tilldelas minne innan du fortsatter
     //Tank pa att listan kan vara tom nar en ny nod laggs till
 
-    struct node* newNode = createListNode(data);
+    List newNode = createListNode(data);
     if (newNode != NULL)
     {
         // Om det redan finns en nod pa forsta platsen maste den frigoras
         if (*list != NULL) 
         {
-            // Om det finns en nod efter forsta noden maste nya nodens next-pekare pekas om till noden efter forsta
-            if ((*list)->next != NULL)  
-            { 
-                newNode->next = (*list)->next;
-            }
-            free(*list);
-            *list = NULL;
+			newNode->next = *list;
+			(*list)->previous = newNode;
         }
-        (*list) = newNode;
+		*list = newNode;
     }
+
 	// Om allokeringen misslyckas kommer den forsta noden var som tidigare, dvs inte forrandras men ett felmeddelande printas 
 	// OBS! Kan behova andras till en assert istallet
 	else
@@ -87,9 +83,10 @@ void addLast(List *list, const Data data)
 {
 	List temp = *list;
 
-	if (isEmpty(temp))
+	if (isEmpty(temp))	//Antar att det ska vara mojligt att anvanda funktionen trots att listan ar tom
 	{
-		addFirst(temp, data);
+		addFirst(&temp, data);
+		*list = temp;
 
 	}
 	else
@@ -98,8 +95,8 @@ void addLast(List *list, const Data data)
 		{
 			temp = temp->next;
 		}
-		addFirst(&temp->next, data);
-		temp->next->previous = temp;
+		addFirst(&temp, data);
+		temp->previous = temp;
 	}
 }
 
@@ -110,6 +107,12 @@ void removeFirst(List *list)
 {
     //Glom inte att frigora minnet for den nod som lankas ur listan.
     //Tank pa att listans huvud efter bortlankningen maste peka pa den nod som nu ar forst.
+
+	assert(*list != NULL);	// Precondition: listan ar inte tom
+
+	*list = (*list)->next;
+	free((*list)->previous);
+	(*list)->previous = NULL;
 }
 
 /*Ta bort sista noden i listan
@@ -118,6 +121,9 @@ void removeLast(List *list)
 {
     //Glom inte att frigora minnet for den nod som lankas ur listan.
     //Tank pa att den nod som nu ar sist inte pekar nagonstans, dess pekare maste nollstallas
+	assert(*list != NULL);
+
+
 }
 
 /*Ta bort data ur listan (forsta forekomsten)
