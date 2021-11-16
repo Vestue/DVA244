@@ -98,12 +98,13 @@ void addLast(List *list, const Data data)
 	}
 	else
 	{
+        List newNode = createListNode(data);
 		while (temp->next != NULL)
 		{
 			temp = temp->next;
 		}
-		addFirst(&temp, data);
-		temp->previous = temp;
+        temp->next = newNode;
+        newNode->previous = temp;
 	}
 }
 
@@ -161,42 +162,87 @@ void removeLast(List *list)
   Tips, nar du hittar ratt nod kan du anvanda en av de ovanstaende funktionerna for att ta bort noden*/
 int removeElement(List *list, const Data data)
 {
-    assert(*list != NULL);  // Antar att detta inte ska ga att gora om listan ar tom
+    assert(*list != NULL);  // Antar att detta inte ska ga att gora om listan ar tom.
 
     List temp = *list;
 
-    while ((temp->next->data != data) && (temp->next != NULL))  // Kommer ej loopa om datat ar i forsta noden.
+    while (temp->data != data && temp->next != NULL)    
     {
         temp = temp->next;
     }
-
-    if (temp->data != data && temp->next == NULL && temp->previous == NULL) // Om det bara finns en nod och den ej har datat.
+    if (temp->data != data)
         return 0;
-    
-    /*else if (temp->next == NULL && temp->previous == NULL)      // Om det ar enda noden.
+    else if (temp->next == NULL && temp->previous == NULL)  // Om det ar enda noden.
     {
         free(temp);
         *list = NULL;
-    }*/
-    else if (temp->next == NULL)                                // Om det ar sista noden.
+    }
+    else if (temp->next == NULL)                            // Om det ar sista noden.
     {
         removeLast(&temp);
     }
-
-    else if (temp->next->data != data)                          // Om datat ej finns. OBS! Den ska bara kolla datat i temp->next om den pekar pa nagat
-        return 0;
-    else if (temp->previous == NULL)                            // Om det ar forsta noden.
+    else if (temp->previous == NULL)                        // Om det ar forsta noden.
     {
-        removeFirst(&temp);
+        removeFirst(&temp); //Blir fel vid denna
     }
-    else                                                        // Om noden ar mellan andra noder.
+    else                                                    // Om noden ar mellan tva noder.
     {
-        List toRemove = temp->next;
-        temp->next = toRemove->next;
-        temp->next->previous = temp;
+        List toRemove = temp;
+        temp = toRemove->next;
+        temp->previous = toRemove->previous;
+        temp->previous->next = temp;
         free(toRemove);
         toRemove = NULL;
     }
+
+
+
+    /*
+    if (temp->next == NULL)
+    {
+        if (temp->data != data && temp->next == NULL && temp->previous == NULL) // Om det bara finns en nod och den ej har datat.
+            return 0;
+        else if (temp->next == NULL)                                // Om det ar sista noden.
+        {
+            removeLast(&temp);
+        }
+    }
+    
+    else
+    {
+        while ((temp->next->data != data) && (temp->next != NULL))  // Kommer ej loopa om datat ar i forsta noden.
+        {
+            temp = temp->next;
+        }
+
+        //TA BORT
+        else if (temp->next == NULL && temp->previous == NULL)      // Om det ar enda noden.
+        {
+            free(temp);
+            *list = NULL;
+        } //TA BORT
+
+        if (temp->next == NULL)                                // Om det ar sista noden.
+        {
+            removeLast(&temp);
+        }
+
+        else if (temp->next->data != data)                          // Om datat ej finns. OBS! Den ska bara kolla datat i temp->next om den pekar pa nagat
+            return 0;
+        else if (temp->previous == NULL)                            // Om det ar forsta noden.
+        {
+            removeFirst(&temp);
+        }
+        else                                                        // Om noden ar mellan andra noder.
+        {
+            List toRemove = temp->next;
+            temp->next = toRemove->next;
+            temp->next->previous = temp;
+            free(toRemove);
+            toRemove = NULL;
+        }
+    }*/
+    
     return 1;
 }
 
@@ -252,7 +298,7 @@ void printList(const List list, FILE *textfile)
 {
     // Antar att strommen oppnas och stangs utanfor funktionen
     if (list == NULL)
-        return 0;
+        return;
     fprintf(textfile, "%d ", list->data);
     printList(list->next, textfile);
 }
