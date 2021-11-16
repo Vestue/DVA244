@@ -1,3 +1,10 @@
+/**************************************************
+* Ragnar Winblad von Walter, rwr21002, 199702221798
+* DVA244
+* Laboration 2.1
+***************************************************/
+
+
 #include "list.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -124,7 +131,7 @@ void removeLast(List *list)
 	assert(*list != NULL);
 
 	List temp = *list;
-	if (temp->next == NULL)
+	if (temp->next == NULL)	//Om det bara finns en nod ska den frigoras direkt
 	{
 		free(temp);
 		*list = NULL;
