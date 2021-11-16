@@ -71,14 +71,36 @@ void addFirst(List *list, const Data data)
         }
         (*list) = newNode;
     }
-    assert((*list)->data == data);
+	// Om allokeringen misslyckas kommer den forsta noden var som tidigare, dvs inte forrandras men ett felmeddelande printas 
+	// OBS! Kan behova andras till en assert istallet
+	else
+	{
+		printf("Failed to add new node. ");
+	}
+
+    assert((*list)->data == data); // Postcondition: Det nya datat ligger forst i listan
 }
 
 /*Lagg till nod sist i listan
   Tips, nar du hittat ratt plats kan du anvanda funktionen addFirst for att lagga till*/
 void addLast(List *list, const Data data)
 {
-    
+	List temp = *list;
+
+	if (isEmpty(temp))
+	{
+		addFirst(temp, data);
+
+	}
+	else
+	{
+		while (temp->next != NULL)
+		{
+			temp = temp->next;
+		}
+		addFirst(&temp->next, data);
+		temp->next->previous = temp;
+	}
 }
 
 /*Ta bort forsta noden i listan
