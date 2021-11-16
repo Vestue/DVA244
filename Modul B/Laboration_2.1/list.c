@@ -123,7 +123,21 @@ void removeLast(List *list)
     //Tank pa att den nod som nu ar sist inte pekar nagonstans, dess pekare maste nollstallas
 	assert(*list != NULL);
 
-
+	List temp = *list;
+	if (temp->next == NULL)
+	{
+		free(temp);
+		*list = NULL;
+	}
+	else
+	{
+		while (temp->next != NULL)
+		{
+			temp = temp->next;
+		}
+		temp->previous->next = NULL;
+		free(temp);
+	}
 }
 
 /*Ta bort data ur listan (forsta forekomsten)
