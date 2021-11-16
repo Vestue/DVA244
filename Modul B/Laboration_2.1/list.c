@@ -117,9 +117,17 @@ void removeFirst(List *list)
 
 	assert(*list != NULL);	// Precondition: listan ar inte tom
 
-	*list = (*list)->next;
-	free((*list)->previous);
-	(*list)->previous = NULL;
+    if ((*list)->next == NULL)
+    {
+        free(*list);
+        *list = NULL;
+    }
+    else
+    {
+        *list = (*list)->next;
+        free((*list)->previous);
+        (*list)->previous = NULL;
+    }
 }
 
 /*Ta bort sista noden i listan
@@ -144,6 +152,7 @@ void removeLast(List *list)
 		}
 		temp->previous->next = NULL;
 		free(temp);
+        // temp = NULL;
 	}
 }
 
@@ -152,7 +161,43 @@ void removeLast(List *list)
   Tips, nar du hittar ratt nod kan du anvanda en av de ovanstaende funktionerna for att ta bort noden*/
 int removeElement(List *list, const Data data)
 {
-    return 0; //Ersatt med ratt returvarde
+    assert(*list != NULL);  // Antar att detta inte ska ga att gora om listan ar tom
+
+    List temp = *list;
+
+    while ((temp->next->data != data) && (temp->next != NULL))  // Kommer ej loopa om datat ar i forsta noden.
+    {
+        temp = temp->next;
+    }
+
+    if (temp->data != data && temp->next == NULL && temp->previous == NULL) // Om det bara finns en nod och den ej har datat.
+        return 0;
+    
+    /*else if (temp->next == NULL && temp->previous == NULL)      // Om det ar enda noden.
+    {
+        free(temp);
+        *list = NULL;
+    }*/
+    else if (temp->next == NULL)                                // Om det ar sista noden.
+    {
+        removeLast(&temp);
+    }
+
+    else if (temp->next->data != data)                          // Om datat ej finns. OBS! Den ska bara kolla datat i temp->next om den pekar pa nagat
+        return 0;
+    else if (temp->previous == NULL)                            // Om det ar forsta noden.
+    {
+        removeFirst(&temp);
+    }
+    else                                                        // Om noden ar mellan andra noder.
+    {
+        List toRemove = temp->next;
+        temp->next = toRemove->next;
+        temp->next->previous = temp;
+        free(toRemove);
+        toRemove = NULL;
+    }
+    return 1;
 }
 
 /*Finns data i listan?
@@ -160,13 +205,19 @@ int removeElement(List *list, const Data data)
   Tank pa att listan kan vara tom*/
 int search(const List list, const Data data)
 {
-    return 0; //Ersatt med ratt returvarde
+    if (list == NULL)
+        return 0;
+    else if (list->data == data)
+        return 1;
+    return search(list->next, data);
 }
 
 /*Returnera antalet noder i listan*/
 int numberOfNodesInList(const List list)
 {
-    return 0; //Ersatt med ratt returvarde
+    if (list == NULL)
+        return 0;
+    return 1 + numberOfNodesInList(list->next);
 }
 
 /*Ta bort alla noder ur listan
@@ -175,6 +226,22 @@ int numberOfNodesInList(const List list)
 void clearList(List *list)
 {
     //Alla noder maste tas avallokeras en och en, det racker inte att endast frigora list.
+    List current = *list;
+    while (*list != NULL)
+    {
+        if (current->next == NULL)
+        {
+            free(current);
+            *list = NULL;
+        }
+        else
+        {
+            current = current->next;
+            free(current->previous);
+            current->previous = NULL;
+        }
+    }
+    assert(*list == NULL);
 }
 
 /*Skriv ut listan
@@ -183,19 +250,29 @@ void clearList(List *list)
   Den har typen av utskriftfunktion blir mer generell da man kan valja att skriva ut till skarmen eller till fil.*/
 void printList(const List list, FILE *textfile)
 {
-    
+    // Antar att strommen oppnas och stangs utanfor funktionen
+    if (list == NULL)
+        return 0;
+    fprintf(textfile, "%d ", list->data);
+    printList(list->next, textfile);
 }
 
 /*Returnera forsta datat i listan
   Precondition: listan ar inte tom (testa med assert)*/
 Data getFirstElement(const List list)
 {
-    return 0; //Ersatt med ratt returvarde
+    assert(list != NULL);
+    if (list->previous == NULL)
+        return list->data;
+    return getFirstElement(list->previous); //Stegar bakat till forsta noden
 }
 
 /*Returnera sista datat i listan
   Precondition: listan ar inte tom (testa med assert)*/
 Data getLastElement(const List list)
 {
-    return 0; //Ersatt med ratt returvarde
+    assert(list != NULL);
+    if (list->next == NULL)
+        return list->data;
+    return getLastElement(list->next);
 }
