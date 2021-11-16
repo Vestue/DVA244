@@ -4,7 +4,6 @@
 * Laboration 2.1
 ***************************************************/
 
-
 #include "list.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -23,7 +22,7 @@ static struct node* createListNode(const Data data)
         temp->data = data;
         temp->next = NULL;      
         temp->previous = NULL;
-        // Pekarna next och previous initieras som NULL for att sedan kunna pekas om utifran behov
+        // Pekarna next och previous initieras som NULL for att sedan kunna pekas om utifran behov.
 
         return temp;
     }
@@ -65,7 +64,7 @@ void addFirst(List *list, const Data data)
     List newNode = createListNode(data);
     if (newNode != NULL)
     {
-        // Om det redan finns en nod pa forsta platsen maste den frigoras
+        // Om det redan finns en nod pa forsta platsen maste den frigoras.
         if (*list != NULL) 
         {
 			newNode->next = *list;
@@ -74,8 +73,8 @@ void addFirst(List *list, const Data data)
 		*list = newNode;
     }
 
-	// Om allokeringen misslyckas kommer den forsta noden var som tidigare, dvs inte forrandras men ett felmeddelande printas 
-	// OBS! Kan behova andras till en assert istallet
+	// Om allokeringen misslyckas kommer den forsta noden var som tidigare, dvs inte forrandras men ett felmeddelande printas.
+	// OBS! Kan behova andras till en assert istallet.
 	else
 	{
 		printf("Failed to add new node. ");
@@ -90,7 +89,7 @@ void addLast(List *list, const Data data)
 {
 	List temp = *list;
 
-	if (isEmpty(temp))	//Antar att det ska vara mojligt att anvanda funktionen trots att listan ar tom
+	if (isEmpty(temp))	//Antar att det ska vara mojligt att anvanda funktionen trots att listan ar tom.
 	{
 		addFirst(&temp, data);
 		*list = temp;
@@ -116,17 +115,18 @@ void removeFirst(List *list)
     //Glom inte att frigora minnet for den nod som lankas ur listan.
     //Tank pa att listans huvud efter bortlankningen maste peka pa den nod som nu ar forst.
 
-	assert(*list != NULL);	// Precondition: listan ar inte tom
-
-    if ((*list)->next == NULL)
+	assert(*list != NULL);	// Precondition: listan ar inte tom.
+    
+    List current = *list;
+    if (current->next == NULL)
     {
-        free(*list);
+        free(current);
         *list = NULL;
     }
     else
     {
-        *list = (*list)->next;
-        free((*list)->previous);
+        (*list) = current->next;
+        free(current);
         (*list)->previous = NULL;
     }
 }
@@ -140,7 +140,7 @@ void removeLast(List *list)
 	assert(*list != NULL);
 
 	List temp = *list;
-	if (temp->next == NULL)	//Om det bara finns en nod ska den frigoras direkt
+	if (temp->next == NULL && temp->previous == NULL)	//Om det bara finns en enda nod ska den frigoras direkt.
 	{
 		free(temp);
 		*list = NULL;
@@ -153,7 +153,6 @@ void removeLast(List *list)
 		}
 		temp->previous->next = NULL;
 		free(temp);
-        // temp = NULL;
 	}
 }
 
@@ -162,7 +161,8 @@ void removeLast(List *list)
   Tips, nar du hittar ratt nod kan du anvanda en av de ovanstaende funktionerna for att ta bort noden*/
 int removeElement(List *list, const Data data)
 {
-    assert(*list != NULL);  // Antar att detta inte ska ga att gora om listan ar tom.
+    if (*list == NULL)
+        return 0;
 
     List temp = *list;
 
@@ -179,11 +179,12 @@ int removeElement(List *list, const Data data)
     }
     else if (temp->next == NULL)                            // Om det ar sista noden.
     {
-        removeLast(&temp);
+        removeLast(&temp);  
     }
     else if (temp->previous == NULL)                        // Om det ar forsta noden.
     {
-        removeFirst(&temp); //Blir fel vid denna
+        *list = temp->next;
+        removeFirst(&temp); 
     }
     else                                                    // Om noden ar mellan tva noder.
     {
@@ -193,56 +194,7 @@ int removeElement(List *list, const Data data)
         temp->previous->next = temp;
         free(toRemove);
         toRemove = NULL;
-    }
-
-
-
-    /*
-    if (temp->next == NULL)
-    {
-        if (temp->data != data && temp->next == NULL && temp->previous == NULL) // Om det bara finns en nod och den ej har datat.
-            return 0;
-        else if (temp->next == NULL)                                // Om det ar sista noden.
-        {
-            removeLast(&temp);
-        }
-    }
-    
-    else
-    {
-        while ((temp->next->data != data) && (temp->next != NULL))  // Kommer ej loopa om datat ar i forsta noden.
-        {
-            temp = temp->next;
-        }
-
-        //TA BORT
-        else if (temp->next == NULL && temp->previous == NULL)      // Om det ar enda noden.
-        {
-            free(temp);
-            *list = NULL;
-        } //TA BORT
-
-        if (temp->next == NULL)                                // Om det ar sista noden.
-        {
-            removeLast(&temp);
-        }
-
-        else if (temp->next->data != data)                          // Om datat ej finns. OBS! Den ska bara kolla datat i temp->next om den pekar pa nagat
-            return 0;
-        else if (temp->previous == NULL)                            // Om det ar forsta noden.
-        {
-            removeFirst(&temp);
-        }
-        else                                                        // Om noden ar mellan andra noder.
-        {
-            List toRemove = temp->next;
-            temp->next = toRemove->next;
-            temp->next->previous = temp;
-            free(toRemove);
-            toRemove = NULL;
-        }
-    }*/
-    
+    }    
     return 1;
 }
 
@@ -296,7 +248,7 @@ void clearList(List *list)
   Den har typen av utskriftfunktion blir mer generell da man kan valja att skriva ut till skarmen eller till fil.*/
 void printList(const List list, FILE *textfile)
 {
-    // Antar att strommen oppnas och stangs utanfor funktionen
+    // Antar att strommen oppnas och stangs utanfor funktionen.
     if (list == NULL)
         return;
     fprintf(textfile, "%d ", list->data);
@@ -310,7 +262,10 @@ Data getFirstElement(const List list)
     assert(list != NULL);
     if (list->previous == NULL)
         return list->data;
-    return getFirstElement(list->previous); //Stegar bakat till forsta noden
+
+    // Head-pekaren pekar alltid på forsta noden men utifall en funktion skickar in en nod-pekare
+    // som inte ar den forsta noden kan satsen under vara anvandbar.
+    return getFirstElement(list->previous); //Stegar bakat till forsta noden.
 }
 
 /*Returnera sista datat i listan
