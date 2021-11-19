@@ -3,6 +3,7 @@
 /* De olika interfacen hittar du i queue.h, stack.h och set.h      */
 /*******************************************************************/
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <assert.h>
 #include "queue.h"
@@ -21,7 +22,9 @@ void testFunctionSet();
 
 int main(void)
 {
-
+    testFunctionQueue();
+    testFunctionStack();
+    testFunctionSet();
     return 0;
 }
 
