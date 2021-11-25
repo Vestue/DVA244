@@ -12,28 +12,38 @@
 /* Skapar en tradnod med det givna datat genom att allokera minne for noden. Glom inte att initiera pekarna*/
 static struct treeNode* createNode(int data)
 {
-    // Glom inte att testa sa att allokeringen lyckades
-	return NULL; // Ersatt med ratt returvarde
+	// Glom inte att testa sa att allokeringen lyckades
+	struct treeNode* newNode = (struct treeNode*)malloc(sizeof(struct treeNode));
+
+	if (newNode != NULL)
+	{
+		newNode->data = data;
+		newNode->left = NULL;
+		newNode->right = NULL;
+		return newNode;
+	}
+	else
+		return NULL;
 }
 
 /* Returnerar en dynamiskt allokerad array som innehaller tradets data sorterat */
 static int* writeSortedToArray(const BSTree tree)
 {
-    /* Skapa en dynamisk array men ratt storlek
-     
-       Skriv datat frŒn tradet sorterat till arrayen (minsta till storsta)
-       - till detta kanske du behover en hjalpfunktion */
-    
-    return NULL; //Ersatt med korrekt returvarde
+	/* Skapa en dynamisk array men ratt storlek
+
+	   Skriv datat frŒn tradet sorterat till arrayen (minsta till storsta)
+	   - till detta kanske du behover en hjalpfunktion */
+
+	return NULL; //Ersatt med korrekt returvarde
 }
 
 /* Bygger upp ett sorterat, balanserat trad fran en sorterad array */
 static void buildTreeSortedFromArray(BSTree* tree, const int arr[], int size)
 {
-    /* Bygg rekursivt fran mitten.
-       Mittenelementet i en delarray skapar rot i deltradet
-       Vanster delarray bygger vanster deltrad
-       Hoger delarray bygger hoger deltrad*/
+	/* Bygg rekursivt fran mitten.
+	   Mittenelementet i en delarray skapar rot i deltradet
+	   Vanster delarray bygger vanster deltrad
+	   Hoger delarray bygger hoger deltrad*/
 }
 
 
@@ -48,7 +58,10 @@ BSTree emptyTree(void)
 /* Returnerar 1 ifall tradet ar tomt, 0 annars */
 int isEmpty(const BSTree tree)
 {
-	return -1; // Ersatt med ratt returvarde
+	if (tree == NULL)
+		return 1;
+	else
+		return 0;
 }
 
 /* Satter in 'data' sorterat i *tree
@@ -56,9 +69,35 @@ int isEmpty(const BSTree tree)
 void insertSorted(BSTree* tree, int data)
 {
 	/*Tank pa att tradet kan vara tomt vid insattning
-      Du bestammer sjalv hur dubletter ska hanteras, ska de inte accepteras eller
-      ska de laggas till vanster/hoger?.
-      Post-condition kan verifieras med hjalp av find(...)*/
+	  Du bestammer sjalv hur dubletter ska hanteras, ska de inte accepteras eller
+	  ska de laggas till vanster/hoger?.
+	  Post-condition kan verifieras med hjalp av find(...)*/
+
+	if ((*tree) == NULL)
+	{
+		*tree = createNode(data);
+	}
+	else if ((*tree)->data == data)
+	{
+		printf("Data already in tree. ");	// Dubletter accepteras ej.
+		return;
+	}
+	else if ((*tree)->data > data)
+	{
+		if ((*tree)->left == NULL)
+			(*tree)->left = createNode(data);
+		else
+			insertSorted((*tree)->left, data);
+	}
+	else if ((*tree)->data < data)
+	{
+		if ((*tree)->right == NULL)
+			(*tree)->right = createNode(data);
+		else
+			insertSorted((*tree)->right, data);
+	}
+	else
+		printf("\nUnexpected behaviour in insertSorted");
 }
 
 /* Utskriftsfunktioner
@@ -134,5 +173,3 @@ void freeTree(BSTree* tree)
 {
 	// Post-condition: tradet ar tomt
 }
-
-

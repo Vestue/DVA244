@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <assert.h>
 #include "BSTree.h"
 #include <stdio.h>
@@ -17,7 +19,7 @@ int main(void)
     BSTree tree = emptyTree();
     
 	//testTree(tree);
-	//menuTree(tree);
+	menuTree(tree);
     
     return 0;
 }
