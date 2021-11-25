@@ -87,14 +87,14 @@ void insertSorted(BSTree* tree, int data)
 		if ((*tree)->left == NULL)
 			(*tree)->left = createNode(data);
 		else
-			insertSorted((*tree)->left, data);
+			insertSorted(&(*tree)->left, data);
 	}
 	else if ((*tree)->data < data)
 	{
 		if ((*tree)->right == NULL)
 			(*tree)->right = createNode(data);
 		else
-			insertSorted((*tree)->right, data);
+			insertSorted(&(*tree)->right, data);
 	}
 	else
 		printf("\nUnexpected behaviour in insertSorted");
@@ -122,7 +122,16 @@ void printPostorder(const BSTree tree, FILE *textfile)
 int find(const BSTree tree, int data)
 {
     // Tank pa att tradet kan vara tomt
-	return -1; //Ersatt med korrekt returvarde
+
+	if (tree == NULL)
+		return 0;
+	else if (tree->data == data)
+		return 1;
+	
+	if (tree->data > data)
+		return find(tree->left, data);
+	else
+		return find(tree->right, data);
 }
 
 /* Tar bort 'data' fran tradet om det finns */
@@ -132,6 +141,27 @@ void removeElement(BSTree* tree, int data)
      Tre fall: Ett lov (inga barn), ett barn (vanster eller hoger), tva barn
      
      Glom inte att frigora noden nar den lankats ur tradet*/
+	
+	if (*tree != NULL)
+	{
+		if (find)
+		{
+			BSTree cur = tree, prev = cur;
+			while (cur->data != data)
+			{
+				prev = cur;
+				if (cur->data > data)
+					cur = cur->left;
+				else
+					cur = cur->right;
+			}
+
+			if (cur->left == NULL && cur->right == NULL)
+			{
+
+			}
+		}
+	}
 }
 
 /* Returnerar hur manga noder som totalt finns i tradet */
