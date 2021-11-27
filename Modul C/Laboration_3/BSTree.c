@@ -5,6 +5,8 @@
 #include "BSTree.h"
 
 /*Det Šr helt tillŒtet att lŠgga till egna hjŠlpfunktioner men de befintliga funktionerna fŒr inte Šndras*/
+int findBiggestInLeft(BSTree*);
+
 
 /* Statiska hjalpfunktioner anvands av andra funktioner i tradet och ska inte ligga i interfacet (anvandaren behover inte kanna till dessa) */
 
@@ -97,7 +99,7 @@ void insertSorted(BSTree* tree, int data)
 			insertSorted(&(*tree)->right, data);
 	}
 	else
-		printf("\nUnexpected behaviour in insertSorted");
+		printf("\nUnexpected behaviour in insertSorted");	// ÄNDRA
 }
 
 /* Utskriftsfunktioner
@@ -144,22 +146,60 @@ void removeElement(BSTree* tree, int data)
 	
 	if (*tree != NULL)
 	{
-		if (find)
+		BSTree cur = *tree, prev = cur;
+		char path = 'U';	// Denna anvands for att avgora om noden med datat naddes genom hoger eller vanster vag. U = Unset
+
+		while (cur != NULL && cur->data != data)
 		{
-			BSTree cur = tree, prev = cur;
-			while (cur->data != data)
+			prev = cur;
+			if (cur->data > data)
 			{
-				prev = cur;
-				if (cur->data > data)
-					cur = cur->left;
+				cur = cur->left;
+				path = 'L';
+			}
+			else
+			{
+				cur = cur->right;
+				path = 'R';
+			}
+		}
+
+		if (cur == NULL)	// Utifall datat inte hittas dar det forvantas kommer cur peka pa null
+		{
+			printf("\nCan't find data.");
+			return;
+		}
+
+		if (cur->left == NULL && cur->right == NULL)
+		{
+			free(cur);
+			if (path == 'R')
+				prev->right = NULL;
+			else if (path == 'L')
+				prev->left = NULL;
+		}
+		else if (cur->left != NULL && cur->right != NULL)
+		{
+			int newData = findBiggestInLeft(&cur->left);	// Hittar storsta vardet i vanster deltrad och frigor den noden
+			cur->data = newData;
+		}
+		else
+		{
+			if (path == 'R')
+			{
+				if (cur->left == NULL)
+					prev->right = cur->right;
 				else
-					cur = cur->right;
+					prev->right = cur->left;
 			}
-
-			if (cur->left == NULL && cur->right == NULL)
+			else
 			{
-
+				if (cur->left == NULL)
+					prev->left = cur->right;
+				else
+					prev->left = cur->left;
 			}
+			free(cur);
 		}
 	}
 }
@@ -202,4 +242,18 @@ void balanceTree(BSTree* tree)
 void freeTree(BSTree* tree)
 {
 	// Post-condition: tradet ar tomt
+}
+
+int findBiggestInLeft(BSTree* tree)
+{
+	BSTree cur = *tree, prev = cur;
+
+	cur = cur->right;
+	if (cur == NULL)
+	{
+		free(cur);
+		prev->right = NULL;
+		return prev->data;
+	}
+	return findBiggestInLeft(&cur);
 }
