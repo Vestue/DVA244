@@ -192,7 +192,7 @@ void removeElement(BSTree* tree, int data)
 		}
 		else if (cur->left != NULL && cur->right != NULL)
 		{
-			int newData = findBiggestInLeft(&cur->left);	// Hittar storsta vardet i vanster deltrad och frigor den noden
+			int newData = findBiggestInLeft(&cur);	// Hittar storsta vardet i vanster deltrad och frigor den noden
 			cur->data = newData;
 		}
 		else
