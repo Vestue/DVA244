@@ -6,6 +6,8 @@
 
 /*Det Šr helt tillŒtet att lŠgga till egna hjŠlpfunktioner men de befintliga funktionerna fŒr inte Šndras*/
 int findBiggestInLeft(BSTree*);
+int fillArrayInOrder(int**, BSTree, int);
+BSTree buildSortedHelp(const int arr[], int min, int max);
 
 
 /* Statiska hjalpfunktioner anvands av andra funktioner i tradet och ska inte ligga i interfacet (anvandaren behover inte kanna till dessa) */
@@ -36,7 +38,18 @@ static int* writeSortedToArray(const BSTree tree)
 	   Skriv datat frŒn tradet sorterat till arrayen (minsta till storsta)
 	   - till detta kanske du behover en hjalpfunktion */
 
-	return NULL; //Ersatt med korrekt returvarde
+	int size = numberOfNodes(tree);
+	int* temp = (int*)malloc(size * sizeof(int));
+
+	if (temp != NULL)
+	{
+		(void)fillArrayInOrder(&temp, tree, 0);	// Rekursiv funktion som fyller arrayen. 
+		// (void) anvands da index som ska anvandas returneras fran funktionen, detta ar ej nodvandigt utanför funktionen
+
+		return temp;
+	}
+	else
+		return NULL;
 }
 
 /* Bygger upp ett sorterat, balanserat trad fran en sorterad array */
@@ -46,6 +59,9 @@ static void buildTreeSortedFromArray(BSTree* tree, const int arr[], int size)
 	   Mittenelementet i en delarray skapar rot i deltradet
 	   Vanster delarray bygger vanster deltrad
 	   Hoger delarray bygger hoger deltrad*/
+
+	// Kallar pa en funktion som rekursivt bygger upp tradet och returnerar en adress till roten
+	*tree = buildSortedHelp(arr, 0, size - 1);
 }
 
 
@@ -98,8 +114,7 @@ void insertSorted(BSTree* tree, int data)
 		else
 			insertSorted(&(*tree)->right, data);
 	}
-	else
-		printf("\nUnexpected behaviour in insertSorted");	// ÄNDRA
+	assert(find(*tree, data) == 1); // Post-condition: data finns i tradet
 }
 
 /* Utskriftsfunktioner
@@ -182,29 +197,38 @@ void removeElement(BSTree* tree, int data)
 			return;
 		}
 
-		if (cur->left == NULL && cur->right == NULL)
+		if (cur->left == NULL && cur->right == NULL)	// Om det ar ett lov
 		{
 			free(cur);
 			if (path == 'R')
 				prev->right = NULL;
 			else if (path == 'L')
 				prev->left = NULL;
+			else if (path == 'U')	// Om sista noden tas bort
+				*tree = NULL;
 		}
-		else if (cur->left != NULL && cur->right != NULL)
+		else if (cur->left != NULL && cur->right != NULL)	// Om noden har tva barn
 		{
 			int newData = findBiggestInLeft(&cur);	// Hittar storsta vardet i vanster deltrad och frigor den noden
 			cur->data = newData;
 		}
-		else
+		else	// Om noden har ett barn
 		{
-			if (path == 'R')
+			if (path == 'U')	// Om noden saknar foralder
+			{
+				if (cur->left == NULL)
+					*tree = cur->right;
+				else
+					*tree = cur->left;
+			}
+			else if (path == 'R')
 			{
 				if (cur->left == NULL)
 					prev->right = cur->right;
 				else
 					prev->right = cur->left;
 			}
-			else
+			else if (path == 'L')
 			{
 				if (cur->left == NULL)
 					prev->left = cur->right;
@@ -231,8 +255,6 @@ int numberOfNodes(const BSTree tree)
 /* Returnerar hur djupt tradet ar */
 int depth(const BSTree tree)
 {
-	return -1; //Ersatt med korrekt returvarde
-
 	if (tree == NULL)
 		return 0;
 	int leftDepth = depth(tree->left);
@@ -248,7 +270,7 @@ int depth(const BSTree tree)
    Se math.h for anvandbara funktioner*/
 int minDepth(const BSTree tree)
 {
-	return log2(1 + numberOfNodes(tree));
+	return ceil(log2(numberOfNodes(tree) + 1));	// Rundar uppat
 }
 
 /* Balansera tradet sa att depth(tree) == minDepth(tree) */
@@ -264,12 +286,32 @@ void balanceTree(BSTree* tree)
 	   Post-conditions:
 	   - tree har lika manga noder som tidigare
 	   - djupet for tradet ar samma som minimumdjupet for tradet */
+
+	int oldSize = numberOfNodes(*tree);
+	int* arr = writeSortedToArray(*tree);
+	freeTree(tree);
+	buildTreeSortedFromArray(tree, arr, oldSize);	// Bygger tradet 
+
+	free(arr);
+	arr = NULL;
+
+	// Post-conditions:
+	assert(oldSize == numberOfNodes(*tree));	// tree har lika manga noder som tidigare
+	assert(depth(*tree) == minDepth(*tree));	// djupet for tradet ar samma som minimumdjupet for tradet
 }
 
 /* Tom tradet och frigor minnet for de olika noderna */
 void freeTree(BSTree* tree)
 {
-	// Post-condition: tradet ar tomt
+	if (*tree == NULL)
+		return;
+
+	// Frigor vanstra deltrad och sen hogra deltrad
+	freeTree(&(*tree)->left);
+	freeTree(&(*tree)->right);
+	free(*tree);
+	*tree = NULL;	// For att roten ska peka pa null.
+	assert(isEmpty(*tree) == 1);	// Post-condition: tradet ar tomt
 }
 
 // Returnerar storsta vardet i vanstra deltrad.
@@ -285,11 +327,38 @@ int findBiggestInLeft(BSTree* tree)
 	}
 	
 	if (cur->left == NULL)
-		prev->left = NULL;
+		prev->right = NULL;
 	else
-		prev->left = cur->left;	// Utifall storsta noden har en nod till vanster maste den lankas ihop innan cur frigors
+		prev->right = cur->left;	// Utifall storsta noden har en nod till vanster maste den lankas ihop innan cur frigors
 
 	int bigNum = cur->data;
 	free(cur);
 	return bigNum;
+}
+
+int fillArrayInOrder(int** arr, BSTree tree, int i)
+{
+	if (tree == NULL)
+		return i;
+	i = fillArrayInOrder(arr, tree->left, i);
+
+	// Varje gang data skrivs in i arrayen okas index vilket sedan returneras 
+	// for att anvandas av nasta nod i rekursiva funktionen
+	*(*arr + i) = tree->data;
+	i++;
+	i = fillArrayInOrder(arr, tree->right, i);
+	return i;
+}
+
+BSTree buildSortedHelp(const int arr[], int min, int max)
+{
+	if (min > max)
+		return NULL;
+	int nodeIndex = (min + max) / 2;
+	BSTree node = createNode(arr[nodeIndex]);
+
+	node->left = buildSortedHelp(arr, min, nodeIndex - 1);	// Bygger vanster deltrad
+	node->right = buildSortedHelp(arr, nodeIndex + 1, max); // Bygger hoger deltrad
+
+	return node;
 }

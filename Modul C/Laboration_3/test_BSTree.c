@@ -18,8 +18,8 @@ int main(void)
 {
     BSTree tree = emptyTree();
     
-	//testTree(tree);
-	menuTree(tree);
+	testTree(tree);
+	//menuTree(tree);
     
     return 0;
 }
@@ -83,6 +83,8 @@ void testTree(BSTree tree)
     assert(numberOfNodes(tree) == 10);
     
     //Verifiera att tradet ar obalanserat
+
+    
     assert(depth(tree) != minDepth(tree));
     
     balanceTree(&tree);
