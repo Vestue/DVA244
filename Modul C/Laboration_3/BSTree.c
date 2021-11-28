@@ -276,13 +276,20 @@ void freeTree(BSTree* tree)
 int findBiggestInLeft(BSTree* tree)
 {
 	BSTree cur = *tree, prev = cur;
+	cur = cur->left;
 
-	cur = cur->right;
-	if (cur == NULL)
+	while (cur->right != NULL)
 	{
-		free(cur);
-		prev->right = NULL;
-		return prev->data;
+		prev = cur;
+		cur = cur->right;
 	}
-	return findBiggestInLeft(&cur);
+	
+	if (cur->left == NULL)
+		prev->left = NULL;
+	else
+		prev->left = cur->left;	// Utifall storsta noden har en nod till vanster maste den lankas ihop innan cur frigors
+
+	int bigNum = cur->data;
+	free(cur);
+	return bigNum;
 }
