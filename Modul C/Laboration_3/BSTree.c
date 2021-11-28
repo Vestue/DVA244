@@ -107,17 +107,29 @@ void insertSorted(BSTree* tree, int data)
    Det racker att ni implementerar LR ordningarna*/
 void printPreorder(const BSTree tree, FILE *textfile)
 {
-
+	if (tree == NULL)
+		return;
+	fprintf(textfile, "%d ", tree->data);
+	printPreorder(tree->left, textfile);
+	printPreorder(tree->right, textfile);
 }
 
 void printInorder(const BSTree tree, FILE *textfile)
 {
-
+	if (tree == NULL)
+		return;
+	printInorder(tree->left, textfile);
+	fprintf(textfile, "%d ", tree->data);
+	printInorder(tree->right, textfile);
 }
 
 void printPostorder(const BSTree tree, FILE *textfile)
 {
-
+	if (tree == NULL)
+		return;
+	printPostorder(tree->left, textfile);
+	printPostorder(tree->right, textfile);
+	fprintf(textfile, "%d ", tree->data);
 }
 
 /* Returnerar 1 om 'data' finns i tree, 0 annars */
@@ -207,20 +219,36 @@ void removeElement(BSTree* tree, int data)
 /* Returnerar hur manga noder som totalt finns i tradet */
 int numberOfNodes(const BSTree tree)
 {
-	return -1; //Ersatt med korrekt returvarde
+	if (tree == NULL)
+		return 0;
+	
+	int leftNodes = numberOfNodes(tree->left);
+	int rightNodes = numberOfNodes(tree->right);
+
+	return 1 + leftNodes + rightNodes;
 }
 
 /* Returnerar hur djupt tradet ar */
 int depth(const BSTree tree)
 {
 	return -1; //Ersatt med korrekt returvarde
+
+	if (tree == NULL)
+		return 0;
+	int leftDepth = depth(tree->left);
+	int rightDepth = depth(tree->right);
+
+	if (rightDepth > leftDepth)
+		return 1 + rightDepth;
+	else
+		return 1 + leftDepth;
 }
 
 /* Returnerar minimidjupet for tradet
    Se math.h for anvandbara funktioner*/
 int minDepth(const BSTree tree)
 {
-	return -1; //Ersatt med korrekt returvarde
+	return log2(1 + numberOfNodes(tree));
 }
 
 /* Balansera tradet sa att depth(tree) == minDepth(tree) */
@@ -244,6 +272,7 @@ void freeTree(BSTree* tree)
 	// Post-condition: tradet ar tomt
 }
 
+// Returnerar storsta vardet i vanstra deltrad.
 int findBiggestInLeft(BSTree* tree)
 {
 	BSTree cur = *tree, prev = cur;
