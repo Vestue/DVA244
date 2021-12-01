@@ -18,8 +18,8 @@ int main(void)
 {
     BSTree tree = emptyTree();
     
-	//testTree(tree);
-	menuTree(tree);
+	testTree(tree);
+	//menuTree(tree);
     
     return 0;
 }
@@ -97,7 +97,43 @@ void testTree(BSTree tree)
     assert(numberOfNodes(tree) == 0);
     assert(depth(tree) == 0);
     
-    printf("Congratulations, your program passet the test\n");
+    //Ta bort nod med två barn
+    int arr2[14] = { 3, 2, 1, 9, 5, 4, 7, 6, 8, 15, 13, 11, 14, 18 };
+    i = 0;
+    for (int i = 0; i < 14; i++)
+    {
+        insertSorted(&tree, arr2[i]);
+    }
+    removeElement(&tree, 9);
+
+    /*Avkommentera rad 106-116 om du vid borttagning av nod med två barn väljer det minsta i höger delträd som ersättare (11 ersätter då 9 i det här testet), jämför dina utskrifter av trädet med de utskrifter som visar hur trädet bör se ut. Om du behöver kan du justera mellanslagen i utskrifterna så att formateringen ser bra ut i din konsoll. */
+    /*
+    printf("\nPreorder\nYour tree:    ");
+    printPreorder(tree, stdout);
+    printf("\nCorrect tree: 3 2 1 11 5 4 7 6 8 15 13 14 18");
+    printf("\nInorder\nYour tree:    ");
+    printInorder(tree, stdout);
+    printf("\nCorrect tree: 1 2 3 4 5 6 7 8 11 13 14 15 18");
+    printf("\nPostorder\nYour tree:    ");
+    printPostorder(tree, stdout);
+    printf("\nCorrect tree: 1 2 4 6 8 7 5 14 13 18 15 11 3");
+    */
+
+
+    /*Avkommentera rad 120-130 om du vid borttagning av nod med två barn väljer det största i vänster delträd som ersättare (8 ersätter då 9 i det här testet), jämför dina utskrifter av trädet med de utskrifter som visar hur trädet bör se ut. Om du behöver kan du justera mellanslagen i utskrifterna så att formateringen ser bra ut i din konsoll. */
+    
+    printf("\nPreorder\nYour tree:    ");
+    printPreorder(tree, stdout);
+    printf("\nCorrect tree: 3 2 1 8 5 4 7 6 15 13 11 14 18");
+    printf("\nInorder\nYour tree:    ");
+    printInorder(tree, stdout);
+    printf("\nCorrect tree: 1 2 3 4 5 6 7 8 11 13 14 15 18");
+    printf("\nPostorder\nYour tree:    ");
+    printPostorder(tree, stdout);
+    printf("\nCorrect tree: 1 2 4 6 7 5 11 14 13 18 15 8 3");
+    
+
+    printf("\n\nCongratulations, your program passet the test\n");
 }
 
 
