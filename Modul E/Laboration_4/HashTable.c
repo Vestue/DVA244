@@ -98,12 +98,8 @@ void deleteElement(HashTable* htable, const Key key)
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
 const Value* lookup(const HashTable* htable, const Key key)
 {
-    int index = hash(key, htable->size);
-    if (htable->table[index].key == key)    // Om nyckeln hittas direkt returneras pekaren till värdet direkt
-    {
-        return &htable->table[index].value;
-    }
-    for (int i = 1; i < htable->size; i++)
+    int index;
+    for (int i = 0; i < htable->size; i++)
     {
         index = (key + i) % htable->size;
         if (htable->table[index].key == key)
