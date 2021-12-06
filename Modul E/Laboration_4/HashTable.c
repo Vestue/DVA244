@@ -12,22 +12,50 @@
 dvs ett index till arrayen som Šr Hashtabellen */
 static int hash(Key key, int tablesize)
 {
-	return -1;
+	return key%tablesize;
 }
 
 /*Leta framŒt enligt principen šppen adressering
  Antalet krockar returneras via pekaren col i parameterlistan*/
 static int linearProbe(const HashTable* htable, Key key, unsigned int *col)
 {
-    return -1; // Ersatt med ett index
+    int i = 0;
+    *col = 1;
+    int hash = (key + i) % htable->size;
+
+    while (*col != htable->size)
+    {
+        if (htable->table[hash].key == key || htable->table[hash].key == NULL)
+            break;
+        i++;
+        (*col)++;
+        hash = (key + i) % htable->size;
+    }
+    if (*col == htable->size)
+    {
+        //printf("\nTable is full. ");
+        return -1;  // Använder negativa tal som ERR då index ej kan vara negativt.
+    }
+    else
+        return hash;
 }
 
 /*Allokera minne fšr hashtabellen*/
 HashTable createHashTable(unsigned int size)
 {
-    // Dessa tva rader ar bara till for att labskelettet ska kompilera. Ta bort dessa nar du skriver funktionen.
     HashTable htable = { 0 };
-    return htable;
+    struct Bucket* temp = (struct Bucket*)malloc(size * sizeof(struct Bucket));
+    if (temp != NULL)
+    {
+        htable.table = temp;    //OBS! Kan behöva initiera delarna i bucketen
+        htable.size = size;
+        return htable;
+    }
+    else
+    {
+        printf("\nFailed to allocate.");
+        return htable;
+    }
 }
 
 /* Satter in paret {key,data} i Hashtabellen, om en nyckel redan finns ska vardet uppdateras */
@@ -47,7 +75,15 @@ void deleteElement(HashTable* htable, const Key key)
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
 const Value* lookup(const HashTable* htable, const Key key)
 {
-    return NULL; // Ersatt med ratt varde
+    int i = 0;
+    int hash = (key + i) % htable->size;
+    for (; i < htable->size; i++)
+    {
+        if (htable->table[hash].key == key)
+            return &htable->table[hash].value;
+        hash = (key + i) % htable->size;
+    }
+    return NULL; // Om i blir lika stor som htable->size har den loopat igenom hela arrayen.
 }
 
 
