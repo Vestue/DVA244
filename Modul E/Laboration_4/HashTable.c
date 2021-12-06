@@ -62,6 +62,16 @@ HashTable createHashTable(unsigned int size)
 /* Returnerar antalet krockar (som rŠknas i linearProbe() )*/
 unsigned int insertElement(HashTable* htable, const Key key, const Value value)
 {
+    unsigned int col = 0;
+    int index = hash(key, htable->table);
+    if (htable->table[index].key == NULL)
+    {
+
+    }
+    else
+    {
+        index = linearProbe(htable, key, &col);
+    }
 	// Postcondition: det finns ett element for key i tabellen (anvand lookup() for att verifiera)
     return 0; //Ersatt med ratt varde
 }
@@ -75,13 +85,12 @@ void deleteElement(HashTable* htable, const Key key)
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
 const Value* lookup(const HashTable* htable, const Key key)
 {
-    int i = 0;
-    int hash = (key + i) % htable->size;
-    for (; i < htable->size; i++)
+    int hash;
+    for (int i = 0; i < htable->size; i++)
     {
+        hash = (key + i) % htable->size;
         if (htable->table[hash].key == key)
             return &htable->table[hash].value;
-        hash = (key + i) % htable->size;
     }
     return NULL; // Om i blir lika stor som htable->size har den loopat igenom hela arrayen.
 }
