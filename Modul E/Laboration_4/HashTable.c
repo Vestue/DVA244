@@ -63,34 +63,53 @@ HashTable createHashTable(unsigned int size)
 unsigned int insertElement(HashTable* htable, const Key key, const Value value)
 {
     unsigned int col = 0;
-    int index = hash(key, htable->table);
-    if (htable->table[index].key == NULL)
-    {
-
-    }
-    else
+    int index = hash(key, htable->size);
+    if (htable->table[index].key != NULL || htable->table[index].key != key)
     {
         index = linearProbe(htable, key, &col);
+
+        if (index == -1) // Utifall listan var full
+        {
+            printf("\nList is full.");
+            return col;
+        }
     }
-	// Postcondition: det finns ett element for key i tabellen (anvand lookup() for att verifiera)
-    return 0; //Ersatt med ratt varde
+    htable->table[index].key = key;
+    htable->table[index].value = value;
+	
+    assert(lookup(htable, key) != NULL);    // Postcondition: det finns ett element for key i tabellen (anvand lookup() for att verifiera)
+    return col;
 }
 
 /* Tar bort datat med nyckel "key" */
 void deleteElement(HashTable* htable, const Key key)
 {
+    int col; // Används bara för att proba
+    int toDeleteIndex = linearProbe(htable, key, &col);
+
+    if (toDeleteIndex == -1)
+    {
+        printf("\nCan't find key.");
+        return;
+    }
 	// Postcondition: inget element med key finns i tabellen (anvand loookup() for att verifiera)
 }
 
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
 const Value* lookup(const HashTable* htable, const Key key)
 {
-    int hash;
-    for (int i = 0; i < htable->size; i++)
+    int index = hash(key, htable->size);
+    if (htable->table[index].key == key)    // Om nyckeln hittas direkt returneras pekaren till värdet direkt
     {
-        hash = (key + i) % htable->size;
-        if (htable->table[hash].key == key)
-            return &htable->table[hash].value;
+        return &htable->table[index].value;
+    }
+    for (int i = 1; i < htable->size; i++)
+    {
+        index = (key + i) % htable->size;
+        if (htable->table[index].key == key)
+            return &htable->table[index].value;
+        else if (htable->table[index].key == NULL)   // Om platsen är tom finns nyckeln ej i hashtabellen
+            break;
     }
     return NULL; // Om i blir lika stor som htable->size har den loopat igenom hela arrayen.
 }
