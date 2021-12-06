@@ -5,6 +5,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+void nullifyPerson(HashTable*, int);
+void sortHashTable(HashTable*, int);
+
 	// Anvands for att markera en ledig plats i Hashtabellen
 
 
@@ -87,12 +90,19 @@ void deleteElement(HashTable* htable, const Key key)
     int col; // Används bara för att proba
     int toDeleteIndex = linearProbe(htable, key, &col);
 
-    if (toDeleteIndex == -1)
+    if (toDeleteIndex == -1 || htable->table[toDeleteIndex].key == NULL)
     {
         printf("\nCan't find key.");
         return;
     }
+    // Tar bort datan och nyckeln.
+    htable->table[toDeleteIndex].key = NULL;
+    nullifyPerson(htable, toDeleteIndex);
+
+    // Sortera listan
+
 	// Postcondition: inget element med key finns i tabellen (anvand loookup() for att verifiera)
+    assert(lookup(htable, key) == NULL);
 }
 
 /* Returnerar en pekare till vardet som key ar associerat med eller NULL om ingen sadan nyckel finns */
@@ -105,7 +115,7 @@ const Value* lookup(const HashTable* htable, const Key key)
         if (htable->table[index].key == key)
             return &htable->table[index].value;
         else if (htable->table[index].key == NULL)   // Om platsen är tom finns nyckeln ej i hashtabellen
-            break;
+            break;                                  // Detta förutsätter att sorteringen skett rätt om något har tagits bort på platsen och nyckeln finns i listan
     }
     return NULL; // Om i blir lika stor som htable->size har den loopat igenom hela arrayen.
 }
@@ -130,4 +140,37 @@ unsigned int getSize(const HashTable* htable)
 void printHashTable(const HashTable* htable)
 {
 	// Tips: anvand printPerson() i Person.h for att skriva ut en person
+}
+
+void nullifyPerson(HashTable* htable, int index)
+{
+    *htable->table[index].value.name = NULL;
+    htable->table[index].value.personalNumber = 0;
+    htable->table[index].value.weight = 0.0;
+}
+
+void sortHashTable(HashTable* htable, int startIndex)
+{
+    int prevIndex = (startIndex + 1) % htable->size, nextIndex;
+    for (int i = 0; i < htable->size; i++)
+    {
+        nextIndex = (prevIndex + i) % htable->size;
+
+        // Om slutet av hashTablet nås eller om en nyckel har bästa möjliga index
+        if (htable->table[nextIndex].key == NULL || nextIndex == hash(htable->table[nextIndex].key, htable->size))   
+            break;
+         
+        else if ((htable->table[nextIndex].key % htable->size) == startIndex)   // DET HÄR ÄR KNAPPT LÄSBART
+        {
+            htable->table[startIndex].key = htable->table[nextIndex].key;   // Flyttar nyckeln till nya platsen
+            htable->table[startIndex].value = htable->table[nextIndex].value;
+            
+            htable->table[nextIndex].key = NULL; // Tar bort nyckeln och värdet från gamla platsen
+            nullifyPerson(htable, nextIndex);
+
+            sortHashTable(htable, nextIndex);   // Kollar om en annan nyckel vill ha denna nya tomma plats
+            break;
+        }
+    }
+    return;
 }
