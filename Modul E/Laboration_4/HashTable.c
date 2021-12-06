@@ -90,13 +90,16 @@ const Value* lookup(const HashTable* htable, const Key key)
 /* Tommer Hashtabellen */
 void freeHashTable(HashTable* htable)
 {
-	// Postcondition: hashtabellen har storlek 0
+    free(htable->table);
+    htable->table = NULL;
+    htable->size = 0;
+    assert(getSize(htable) == 0);   // Postcondition: hashtabellen har storlek 0
 }
 
 /* Ger storleken av Hashtabellen */
 unsigned int getSize(const HashTable* htable)
 {
-    return 0; // Ersatt med ratt varde
+    return htable->size;
 }
 
 /* Denna for att ni enkelt ska kunna visualisera en Hashtabell */
