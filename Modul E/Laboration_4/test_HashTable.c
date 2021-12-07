@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Person.h"
-#define SIZE 200
+#define SIZE 50
 #define LOOPS 1000
 
 /*Typer fšr att hantera ett dynamiskt antal tabeller - anvands i compareHashTableSizes*/
@@ -35,8 +35,8 @@ void menu(void); /*A menu to test your functions with manual data och random dat
 int main(void)
 {
 //    menu();
-    test();
-//    compareHashTableSizes();
+//    test();
+    compareHashTableSizes();
 
 	return 0;
 }
