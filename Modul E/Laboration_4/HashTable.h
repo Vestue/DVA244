@@ -2,7 +2,7 @@
 #define HASHTABLE_H
 
 #include "Bucket.h"
-#define UNUSED 0
+#define UNUSED 0	// Anvands for att markera en ledig plats i Hashtabellen
 
 /*Hashtabell som loser krockar med hjalp av oppen adressering*/
 typedef struct 

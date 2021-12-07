@@ -1,3 +1,9 @@
+/*****************************************************
+    Ragnar Winblad von Walter, rwr21002, 199702221798
+    DVA244
+    Laboration 4
+*******************************************************/
+
 #define _CRT_SECURE_NO_WARNINGS // Behovs for vissa funktioner i visual studio
 #include "HashTable.h"
 #include "Bucket.h"
@@ -7,9 +13,6 @@
 
 void emptyBucket(HashTable*, int);
 void sortHashTable(HashTable*, int);
-
-	// Anvands for att markera en ledig plats i Hashtabellen
-
 
 /* Denna funktion tar en nyckel och returnerar ett hash-index
 dvs ett index till arrayen som Šr Hashtabellen */
@@ -91,6 +94,7 @@ unsigned int insertElement(HashTable* htable, const Key key, const Value value)
 void deleteElement(HashTable* htable, const Key key)
 {
     int col; // Används bara för att proba
+    // Hitta index till nyckeln som ska tas bort
     int toDeleteIndex = linearProbe(htable, key, &col);
 
     if (toDeleteIndex == -1 || htable->table[toDeleteIndex].key == UNUSED)
@@ -118,7 +122,7 @@ const Value* lookup(const HashTable* htable, const Key key)
         if (htable->table[index].key == key)
             return &htable->table[index].value;
         else if (htable->table[index].key == UNUSED)   // Om platsen är tom finns nyckeln ej i hashtabellen
-            break;                                  // Detta förutsätter att sorteringen skett rätt om något har tagits bort på platsen och nyckeln finns i listan
+            break;                                  
     }
     return NULL; // Om i blir lika stor som htable->size har den loopat igenom hela arrayen.
 }
@@ -142,7 +146,6 @@ unsigned int getSize(const HashTable* htable)
 /* Denna for att ni enkelt ska kunna visualisera en Hashtabell */
 void printHashTable(const HashTable* htable)
 {
-	// Tips: anvand printPerson() i Person.h for att skriva ut en person
     for (unsigned int i = 0; i < htable->size; i++)
     {
         printf("\n%d : %d", i, htable->table[i].key);
