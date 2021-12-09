@@ -1,0 +1,56 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc build all files in directory",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "${fileDirname}/*.c",
+                "${fileDirname}/*.h",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-Wall",
+                "-Wextra",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task written by Kurbitz."
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-Wall",
+                "-Wextra",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task written by Kurbitz."
+        }
+    ],
+    "version": "2.0.0"
+}
