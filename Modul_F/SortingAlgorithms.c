@@ -51,13 +51,13 @@ static void insertionSort(ElementType* arrayToSort, unsigned int size, Statistic
 	{
 		// Om högra talet är större flyttas vänsterdelen bara fram ett steg.
 		// Om talet är mindre måste de jämföras med elementen i vänsterarrayen för att få rätt plats.
-		if (lessThan(arrayToSort[i], arrayToSort[j], statistics))
+		if (lessThan(arrayToSort[i + 1], arrayToSort[i], statistics))
 		{
-			for (int j = 0; lessThan(i, elementsInLeft, statistics); j++)
+			for (int j = 0; lessThan(j, elementsInLeft, statistics); j++)
 			{
-				if (lessThan(arrayToSort[i], arrayToSort[j], statistics))
+				if (lessThan(arrayToSort[i + 1], arrayToSort[j], statistics))
 				{
-					swapElements(arrayToSort[i], arrayToSort[j], statistics);
+					swapElements(arrayToSort[i + 1], arrayToSort[j], statistics);
 				}
 			}
 		}
