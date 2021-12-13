@@ -68,8 +68,19 @@ static void selectionSort(ElementType* arrayToSort, unsigned int size, Statistic
 {
 }
 
+static void mergeHelp(ElementType* array, int first, int mid, int last)
+{
+
+}
+
 static void mergeSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
+	if (lessThan(arrayToSort[0], arrayToSort[size - 1], statistics))
+	{
+		int mid = size / 2;
+		mergeSort(&arrayToSort, mid, statistics); // Sortera vänster
+		mergeSort(&arrayToSort[mid], size, statistics); // Sortera höger
+	}
 }
 
 static void quickSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
