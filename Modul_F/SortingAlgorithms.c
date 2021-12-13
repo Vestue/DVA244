@@ -29,10 +29,39 @@ int isImplemented(SortingAlgorithm algorithm)
 
 static void bubbleSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
+	int changeMade;
+	do
+	{
+		changeMade = 0;	// Används för att avgöra om sorteringen är färdig.
+		for (int i = 0; lessThan(i, size, statistics); i++)
+		{
+			if (greaterThan(arrayToSort[i], arrayToSort[i + 1], statistics))
+			{
+				swapElements(&arrayToSort[i], &arrayToSort[i + 1], statistics);
+				changeMade = 1;
+			}
+		}
+	} while (changeMade != 0);
+	
 }
 
 static void insertionSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
+	for (int i = 0, elementsInLeft = 1; lessThan(i, size, statistics); i++, elementsInLeft++)
+	{
+		// Om högra talet är större flyttas vänsterdelen bara fram ett steg.
+		// Om talet är mindre måste de jämföras med elementen i vänsterarrayen för att få rätt plats.
+		if (lessThan(arrayToSort[i], arrayToSort[j], statistics))
+		{
+			for (int j = 0; lessThan(i, elementsInLeft, statistics); j++)
+			{
+				if (lessThan(arrayToSort[i], arrayToSort[j], statistics))
+				{
+					swapElements(arrayToSort[i], arrayToSort[j], statistics);
+				}
+			}
+		}
+	}
 }
 
 static void selectionSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
