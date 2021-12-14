@@ -96,12 +96,12 @@ static void mergeBack(ElementType* arrayToSort, unsigned int first, unsigned int
 	{
 		if (lessThanOrEqualTo(leftArray[l], rightArray[r], statistics))
 		{
-			arrayToSort[i] = leftArray[l];
+			swapElements(&arrayToSort[i], &leftArray[l], statistics);
 			l++;
 		}
 		else
 		{
-			arrayToSort[i] = rightArray[r];
+			swapElements(&arrayToSort[i], &rightArray[r], statistics);
 			r++;
 		}
 	}
