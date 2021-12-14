@@ -9,7 +9,7 @@ int isImplemented(SortingAlgorithm algorithm)
 {
 	switch (algorithm)
 	{
-   //   case BUBBLE_SORT:
+      case BUBBLE_SORT:
  //     case INSERTION_SORT:
 //      case SELECTION_SORT:
 //      case QUICK_SORT:
@@ -29,6 +29,7 @@ int isImplemented(SortingAlgorithm algorithm)
 
 static void bubbleSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
+	printArray(arrayToSort, size, stdout);
 	int changeMade;
 	do
 	{
@@ -67,17 +68,17 @@ static void selectionSort(ElementType* arrayToSort, unsigned int size, Statistic
 {
 }
 
-static int* mergeArray(int size)
+static int* allocateArray(int size)
 {
 	int* temp = (int*)malloc(sizeof(int) * size);
 	return temp;
 }
 
-static void mergeHelp(ElementType* arrayToSort, const unsigned int mid, const unsigned int last, Statistics* statistics)
+static void mergeBack(ElementType* arrayToSort, unsigned int first, unsigned int mid, unsigned int last, Statistics* statistics)
 {
-	int leftSize = mid + 1, rightSize = last - mid;
-	int* leftArray = mergeArray(leftSize);
-	int* rightArray = mergeArray(rightSize);
+	int leftSize = mid - first + 1, rightSize = last - mid;
+	int* leftArray = allocateArray(leftSize);
+	int* rightArray = allocateArray(rightSize);
 	if (leftArray == NULL || rightArray == NULL)	// isEqual hanterar inte pekare
 	{
 		printf("\nAbort!");
@@ -85,15 +86,15 @@ static void mergeHelp(ElementType* arrayToSort, const unsigned int mid, const un
 	}
 
 	for (int i = 0; lessThan(i, leftSize, statistics); i++)
-		leftArray[i] = arrayToSort[i];
+		leftArray[i] = arrayToSort[i + first];
 	for (int i = 0; lessThan(i, rightSize, statistics); i++)
-		rightArray[i] = arrayToSort[mid + 1 + i];
-
+		rightArray[i] = arrayToSort[mid + i + 1];
+	
 	// Flyttar över minsta element fram tills slutet på nån av arrayerna
-	int l = 0, r = 0, i;
-	for (i = 0; lessThan(l, leftSize, statistics) && lessThan(r, rightSize, statistics); i++)
+	int l = 0, r = 0, i = first;
+	for (; lessThan(l, leftSize, statistics) && lessThan(r, rightSize, statistics); i++)
 	{
-		if (lessThan(leftArray[l], rightArray[r], statistics))
+		if (lessThanOrEqualTo(leftArray[l], rightArray[r], statistics))
 		{
 			arrayToSort[i] = leftArray[l];
 			l++;
@@ -114,16 +115,29 @@ static void mergeHelp(ElementType* arrayToSort, const unsigned int mid, const un
 	free(rightArray);
 }
 
+static void mergeHelp(ElementType* arrayToSort, unsigned int first, unsigned int last, Statistics* statistics)
+{
+	if (equalTo(first, last, statistics))
+		return;
+	unsigned int mid = (first + last) / 2;
+	mergeHelp(arrayToSort, first, mid, statistics); // Sortera vänster
+	mergeHelp(arrayToSort, mid + 1, last, statistics); // Sortera höger
+	mergeBack(arrayToSort, first, mid, last, statistics);
+}
+
 static void mergeSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
+	mergeHelp(arrayToSort, 0, size - 1, statistics);
+	/*
 	// När arrayen har delats så många gånger att det bara finns ett element kommer det första elementet vara samma som sista
 	if (equalTo(arrayToSort[0], arrayToSort[size - 1], statistics))
 		return;
 	unsigned int mid = size / 2;
+	printArray(arrayToSort, size, stdout);
 	mergeSort(arrayToSort, mid, statistics); // Sortera vänster
 	mergeSort(&arrayToSort[mid + 1], size, statistics); // Sortera höger
 	mergeHelp(arrayToSort, mid, size - 1, statistics);
-	printArray(arrayToSort, size, stdout);
+	printArray(arrayToSort, size, stdout);*/
 }
 
 static void quickSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
