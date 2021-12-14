@@ -9,11 +9,11 @@ int isImplemented(SortingAlgorithm algorithm)
 {
 	switch (algorithm)
 	{
-//      case BUBBLE_SORT:
-//      case INSERTION_SORT:
+   //   case BUBBLE_SORT:
+ //     case INSERTION_SORT:
 //      case SELECTION_SORT:
 //      case QUICK_SORT:
-//      case MERGE_SORT:
+      case MERGE_SORT:
             return 1;
         default:
             return 0;
@@ -33,7 +33,7 @@ static void bubbleSort(ElementType* arrayToSort, unsigned int size, Statistics* 
 	do
 	{
 		changeMade = 0;	// Används för att avgöra om sorteringen är färdig.
-		for (int i = 0; lessThan(i, size, statistics); i++)
+		for (int i = 0; lessThan(i, size - 1, statistics); i++)
 		{
 			if (greaterThan(arrayToSort[i], arrayToSort[i + 1], statistics))
 			{
@@ -42,12 +42,11 @@ static void bubbleSort(ElementType* arrayToSort, unsigned int size, Statistics* 
 			}
 		}
 	} while (changeMade != 0);
-	
 }
 
 static void insertionSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
-	for (int i = 0, elementsInLeft = 1; lessThan(i, size, statistics); i++, elementsInLeft++)
+	for (int i = 0, elementsInLeft = 1; lessThan(i, size - 1, statistics); i++, elementsInLeft++)
 	{
 		// Om högra talet är större flyttas vänsterdelen bara fram ett steg.
 		// Om talet är mindre måste de jämföras med elementen i vänsterarrayen för att få rätt plats.
@@ -57,7 +56,7 @@ static void insertionSort(ElementType* arrayToSort, unsigned int size, Statistic
 			{
 				if (lessThan(arrayToSort[i + 1], arrayToSort[j], statistics))
 				{
-					swapElements(arrayToSort[i + 1], arrayToSort[j], statistics);
+					swapElements(&arrayToSort[i + 1], &arrayToSort[j], statistics);
 				}
 			}
 		}
@@ -74,45 +73,45 @@ static int* mergeArray(int size)
 	return temp;
 }
 
-static void mergeHelp(ElementType* array, const unsigned int mid, const unsigned int last, Statistics* statistics)
+static void mergeHelp(ElementType* arrayToSort, const unsigned int mid, const unsigned int last, Statistics* statistics)
 {
 	int leftSize = mid + 1, rightSize = last - mid;
-	int* left = mergeArray(leftSize);
-	int* right = mergeArray(rightSize);
-	if (left == NULL || right == NULL)	// isEqual hanterar inte pekare
+	int* leftArray = mergeArray(leftSize);
+	int* rightArray = mergeArray(rightSize);
+	if (leftArray == NULL || rightArray == NULL)	// isEqual hanterar inte pekare
 	{
 		printf("\nAbort!");
 		return;
 	}
 
 	for (int i = 0; lessThan(i, leftSize, statistics); i++)
-		left[i] = array[i];
+		leftArray[i] = arrayToSort[i];
 	for (int i = 0; lessThan(i, rightSize, statistics); i++)
-		right[i] = array[mid + 1 + i];
+		rightArray[i] = arrayToSort[mid + 1 + i];
 
 	// Flyttar över minsta element fram tills slutet på nån av arrayerna
 	int l = 0, r = 0, i;
 	for (i = 0; lessThan(l, leftSize, statistics) && lessThan(r, rightSize, statistics); i++)
 	{
-		if (lessThan(left[l], right[r], statistics))
+		if (lessThan(leftArray[l], rightArray[r], statistics))
 		{
-			array[i] = left[l];
+			arrayToSort[i] = leftArray[l];
 			l++;
 		}
 		else
 		{
-			array[i] = right[r];
+			arrayToSort[i] = rightArray[r];
 			r++;
 		}
 	}
 	// Flyttar över det som är kvar
 	for (; lessThan(l, leftSize, statistics); i++, l++)
-		array[i] = left[l];
+		arrayToSort[i] = leftArray[l];
 	for (; lessThan(r, rightSize, statistics); i++, r++)
-		array[i] = right[r];
+		arrayToSort[i] = rightArray[r];
 
-	free(left);
-	free(right);
+	free(leftArray);
+	free(rightArray);
 }
 
 static void mergeSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
@@ -120,10 +119,11 @@ static void mergeSort(ElementType* arrayToSort, unsigned int size, Statistics* s
 	// När arrayen har delats så många gånger att det bara finns ett element kommer det första elementet vara samma som sista
 	if (equalTo(arrayToSort[0], arrayToSort[size - 1], statistics))
 		return;
-	int mid = size / 2;
-	mergeSort(&arrayToSort, mid, statistics); // Sortera vänster
+	unsigned int mid = size / 2;
+	mergeSort(arrayToSort, mid, statistics); // Sortera vänster
 	mergeSort(&arrayToSort[mid + 1], size, statistics); // Sortera höger
 	mergeHelp(arrayToSort, mid, size - 1, statistics);
+	printArray(arrayToSort, size, stdout);
 }
 
 static void quickSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
