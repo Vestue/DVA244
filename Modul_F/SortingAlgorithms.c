@@ -10,7 +10,7 @@ int isImplemented(SortingAlgorithm algorithm)
 	switch (algorithm)
 	{
       case BUBBLE_SORT:
- //     case INSERTION_SORT:
+      case INSERTION_SORT:
 //      case SELECTION_SORT:
 //      case QUICK_SORT:
       case MERGE_SORT:

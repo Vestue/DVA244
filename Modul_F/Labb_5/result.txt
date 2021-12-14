@@ -18,6 +18,25 @@ Bakåtsorterat:
   40 element:  3160 jämförelser,   780 byten
 
 ---------------------------------------------
+--------       Insertion sort       ---------
+---------------------------------------------
+
+Osorterat: 
+  10 element:    55 jämförelser,     6 byten
+  20 element:   431 jämförelser,   113 byten
+  40 element:  1644 jämförelser,   474 byten
+
+Sorterat: 
+  10 element:    19 jämförelser,     0 byten
+  20 element:    39 jämförelser,     0 byten
+  40 element:    79 jämförelser,     0 byten
+
+Bakåtsorterat: 
+  10 element:   118 jämförelser,    45 byten
+  20 element:   438 jämförelser,   190 byten
+  40 element:  1678 jämförelser,   780 byten
+
+---------------------------------------------
 --------         Merge sort         ---------
 ---------------------------------------------
 
