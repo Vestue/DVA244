@@ -1,3 +1,9 @@
+/****************************************************
+	Ragnar Winblad von Walter, rwr21002, 199702221798
+	DVA244
+	Laboration 5
+*****************************************************/
+
 #define _CRT_SECURE_NO_WARNINGS
 #include "SortingAlgorithms.h"
 #include "Statistics.h"
@@ -33,7 +39,9 @@ static void bubbleSort(ElementType* arrayToSort, unsigned int size, Statistics* 
 	int changeMade;
 	do
 	{
-		changeMade = 0;	// Används för att avgöra om sorteringen är färdig.
+		changeMade = 0;	// Anvands för att avgora om sorteringen är fardig.
+		//	Om loopen under tar sig genom arrayen utan att behova sortera kommer den forbli 0.
+
 		for (int i = 0; lessThan(i, size - 1, statistics); i++)
 		{
 			if (greaterThan(arrayToSort[i], arrayToSort[i + 1], statistics))
@@ -49,8 +57,8 @@ static void insertionSort(ElementType* arrayToSort, unsigned int size, Statistic
 {
 	for (int i = 0, elementsInLeft = 1; lessThan(i, size - 1, statistics); i++, elementsInLeft++)
 	{
-		// Om högra talet är större flyttas vänsterdelen bara fram ett steg.
-		// Om talet är mindre måste de jämföras med elementen i vänsterarrayen för att få rätt plats.
+		// Om hogra talet är storre flyttas vansterdelen bara fram ett steg.
+		// Om talet är mindre maste de jämföras med elementen i vansterarrayen för att fa ratt plats.
 		if (lessThan(arrayToSort[i + 1], arrayToSort[i], statistics))
 		{
 			for (int j = 0; lessThan(j, elementsInLeft, statistics); j++)
@@ -68,6 +76,7 @@ static void selectionSort(ElementType* arrayToSort, unsigned int size, Statistic
 {
 }
 
+// For att allokera arrayer till mergeBack funktionen, for mergeSort.
 static int* allocateArray(int size)
 {
 	int* temp = (int*)malloc(sizeof(int) * size);
@@ -79,23 +88,29 @@ static void mergeBack(ElementType* arrayToSort, unsigned int first, unsigned int
 	int leftSize = mid - first + 1, rightSize = last - mid;
 	int* leftArray = allocateArray(leftSize);
 	int* rightArray = allocateArray(rightSize);
-	if (leftArray == NULL || rightArray == NULL)	// isEqual hanterar inte pekare
+
+	// Kolla om allokeringen misslyckades i nan av arrayerna.
+	// Anvander ej funktionen equalTo for jamforelsen da det ej hanterar pekare.
+	if (leftArray == NULL || rightArray == NULL)	
 	{
-		printf("\nAbort!");
+		printf("\nFailed to allocate!");
 		return;
 	}
 
+	// Fyller bada delarrayer med sina element
 	for (int i = 0; lessThan(i, leftSize, statistics); i++)
 		leftArray[i] = arrayToSort[i + first];
 	for (int i = 0; lessThan(i, rightSize, statistics); i++)
 		rightArray[i] = arrayToSort[mid + i + 1];
 	
-	// Flyttar över minsta element fram tills slutet på nån av arrayerna
+	// Flyttar over minsta element fram tills slutet på nån av arrayerna.
 	int l = 0, r = 0, i = first;
 	for (; lessThan(l, leftSize, statistics) && lessThan(r, rightSize, statistics); i++)
 	{
 		if (lessThanOrEqualTo(leftArray[l], rightArray[r], statistics))
 		{
+			// Byter egentligen inte plats på element, utan ska bara skriva over vardet pa elementet i "riktiga" arrayen
+			// men det ar intressant med statistiken.
 			swapElements(&arrayToSort[i], &leftArray[l], statistics);
 			l++;
 		}
@@ -105,7 +120,7 @@ static void mergeBack(ElementType* arrayToSort, unsigned int first, unsigned int
 			r++;
 		}
 	}
-	// Flyttar över det som är kvar
+	// Flyttar over det som ar kvar i ena delen.
 	for (; lessThan(l, leftSize, statistics); i++, l++)
 		arrayToSort[i] = leftArray[l];
 	for (; lessThan(r, rightSize, statistics); i++, r++)
@@ -120,24 +135,14 @@ static void mergeHelp(ElementType* arrayToSort, unsigned int first, unsigned int
 	if (equalTo(first, last, statistics))
 		return;
 	unsigned int mid = (first + last) / 2;
-	mergeHelp(arrayToSort, first, mid, statistics); // Sortera vänster
-	mergeHelp(arrayToSort, mid + 1, last, statistics); // Sortera höger
-	mergeBack(arrayToSort, first, mid, last, statistics);
+	mergeHelp(arrayToSort, first, mid, statistics);			// Dela upp vanster del.
+	mergeHelp(arrayToSort, mid + 1, last, statistics);		// Dela upp hoger del.
+	mergeBack(arrayToSort, first, mid, last, statistics);	// Satt ihop delarna i sorterad ordning.
 }
 
 static void mergeSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
 {
 	mergeHelp(arrayToSort, 0, size - 1, statistics);
-	/*
-	// När arrayen har delats så många gånger att det bara finns ett element kommer det första elementet vara samma som sista
-	if (equalTo(arrayToSort[0], arrayToSort[size - 1], statistics))
-		return;
-	unsigned int mid = size / 2;
-	printArray(arrayToSort, size, stdout);
-	mergeSort(arrayToSort, mid, statistics); // Sortera vänster
-	mergeSort(&arrayToSort[mid + 1], size, statistics); // Sortera höger
-	mergeHelp(arrayToSort, mid, size - 1, statistics);
-	printArray(arrayToSort, size, stdout);*/
 }
 
 static void quickSort(ElementType* arrayToSort, unsigned int size, Statistics* statistics)
