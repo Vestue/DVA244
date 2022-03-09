@@ -14,6 +14,8 @@
 void emptyBucket(HashTable*, int);
 void sortHashTable(HashTable*, int);
 
+int changeSize(HashTable* htable, int newSize); // EXAMINATION, denna ligger längst ned
+
 /* Denna funktion tar en nyckel och returnerar ett hash-index
 dvs ett index till arrayen som Šr Hashtabellen */
 static int hash(Key key, int tablesize)
@@ -190,4 +192,44 @@ void sortHashTable(HashTable* htable, int startIndex)
         }
     }
     return;
+}
+
+// EXAMINATION
+// Funktionen börjar med att kolla om den inmatade storleken är större än den föregående storleken.
+// Om det stämmer kommer funktionen att försöka allokera en ny hashtabbel.
+// Sedan ska den nya hashtabbellen fyllas med nycklar och värden för det gamla,
+// den gör detta genom att loopa igenom varje index och använda nycklarna och värda på det index för att göra en insert i nya tabellen.
+// Detta gör att nycklarna sorteras rätt direkt när de sätts in i nya hashtabellen.
+// Sedan frigörs den gamla tabellen och htable pekas om till den nya.
+
+int changeSize(HashTable* htable, int newSize)
+{
+    // Det måste finnas en tabell att ändra storlek på
+    assert(htable != NULL);
+
+    int oldSize = getSize(htable);
+    if (newSize < oldSize)
+    {
+        printf("\nNew size has to be bigger than the old one.\nOld size: %d", oldSize);
+        return 1;
+    }
+    else
+    {
+        HashTable temp = createHashTable(newSize);
+        if (temp.table == NULL)
+            return 1;
+
+        // Kopiera över all gammal data till rätt plats i nya tabellen
+        for (int i = 0; i < oldSize; i++)
+        {
+            (void)insertElement(&temp, htable->table[i].key, htable->table[i].value);
+        }
+        // Frigör gamla tabellen och pekar om htable till nya
+        freeHashTable(htable);
+        htable->table = temp.table;
+        htable->size = newSize;
+    }
+
+    assert(getSize(htable) == newSize);
+    return 0;
 }

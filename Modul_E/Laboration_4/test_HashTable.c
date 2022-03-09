@@ -31,14 +31,121 @@ void compareHashTableSizes(void);/*Valj hur manga olika hashtabellsstorlekar du 
 void test(void); /*Testar samtliga funktioner och olika fall fšr hashtabellen.*/
 void menu(void); /*A menu to test your functions with manual data och random data*/
 
+// EXAMINATION
+void testChangeSize(void);
+
 
 int main(void)
 {
 //    menu();
-//    test();
-    compareHashTableSizes();
+//    compareHashTableSizes();
+//     test
+
+    // EXAMINATION
+    // Testar först, gör om storleken och testar sedan igen
+
+    testChangeSize();
+
 
 	return 0;
+}
+
+
+// EXAMINATION
+// Huvudfunktion för att testa olika scenarion med changeSize
+// Skapar först en tabell med storleken 10. Testar så att alla läggs till på rätt platser.
+// Ändrar sedan tabellens storlek till 20 och testar så att de ligger på rätt platser utifrån storleken.
+// Testar sedan att ändra tillbaka till storlek 10 och testar att de ligger kvar på samma platser efter ändringen till 20.
+void testChangeSize(void)
+{
+    // Lägger först till 10 personer i en tabell med storleken 10
+
+    HashTable htable = createHashTable(10);
+    assert(getSize(&htable) == 10);
+    Person arrPersons[10] = { {11, 81.0, "Tobias"},
+                            {2, 75.0, "Alva"},
+                            {33, 114.0, "Bengt"},
+                            {4, 93.5, "Nora"},
+                            {5, 71.3, "Aram"},
+                            {6, 83.6, "Jasmin"},
+                            {7, 63.0, "Emma"},
+                            {8, 93.4, "Ibrahim"},
+                            {9, 53.9, "Sara"},
+                            {20, 55.5, "Yoot"} };
+    Person aPerson;
+    const Value* aPersonPointer;
+    int i, collisions = 0, retval;
+
+    //Testa om de ligger rätt
+    for (i = 0; i < 10; i++)
+    {
+        collisions += insertElement(&htable, arrPersons[i].personalNumber, arrPersons[i]);
+    }
+    assert(htable.table[0].key == 20);
+    assert(htable.table[1].key == 11);
+    assert(htable.table[2].key == 2);
+    assert(htable.table[3].key == 33);
+    assert(htable.table[4].key == 4);
+    assert(htable.table[5].key == 5);
+    assert(htable.table[6].key == 6);
+    assert(htable.table[7].key == 7);
+    assert(htable.table[8].key == 8);
+    assert(htable.table[9].key == 9);
+    printf("\nAdded 10 people.");
+
+    // Ändrar storlek på tabellen
+    retval = changeSize(&htable, 20);
+    if (retval)
+        printf("\nFailed to change size!");
+    else
+        printf("\nChanged size to %d", 20);
+    
+    // Testa om de ligger rätt efter förändringen
+    assert(htable.table[0].key == 20);
+    assert(htable.table[1].key == UNUSED);
+    assert(htable.table[2].key == 2);
+    assert(htable.table[3].key == UNUSED);
+    assert(htable.table[4].key == 4);
+    assert(htable.table[5].key == 5);
+    assert(htable.table[6].key == 6);
+    assert(htable.table[7].key == 7);
+    assert(htable.table[8].key == 8);
+    assert(htable.table[9].key == 9);
+    assert(htable.table[10].key == UNUSED);
+    assert(htable.table[11].key == 11);
+    assert(htable.table[12].key == UNUSED);
+    assert(htable.table[13].key == 33);
+    assert(htable.table[14].key == UNUSED);
+    assert(htable.table[15].key == UNUSED);
+    assert(htable.table[16].key == UNUSED);
+    assert(htable.table[17].key == UNUSED);
+    assert(htable.table[18].key == UNUSED);
+    assert(htable.table[19].key == UNUSED);
+    printf("\nAll are in correct positions.");
+
+    // Testar ändra tillbaka till föregående storlek
+    (void)changeSize(&htable, 10);
+    assert(htable.table[0].key == 20);
+    assert(htable.table[1].key == UNUSED);
+    assert(htable.table[2].key == 2);
+    assert(htable.table[3].key == UNUSED);
+    assert(htable.table[4].key == 4);
+    assert(htable.table[5].key == 5);
+    assert(htable.table[6].key == 6);
+    assert(htable.table[7].key == 7);
+    assert(htable.table[8].key == 8);
+    assert(htable.table[9].key == 9);
+    assert(htable.table[10].key == UNUSED);
+    assert(htable.table[11].key == 11);
+    assert(htable.table[12].key == UNUSED);
+    assert(htable.table[13].key == 33);
+    assert(htable.table[14].key == UNUSED);
+    assert(htable.table[15].key == UNUSED);
+    assert(htable.table[16].key == UNUSED);
+    assert(htable.table[17].key == UNUSED);
+    assert(htable.table[18].key == UNUSED);
+    assert(htable.table[19].key == UNUSED);
+    printf("\nAll are still in the same positions.");
 }
 
 /*********************************************************************************************************/
@@ -247,7 +354,7 @@ void menu(void)
     Person aPerson;
     const Value *aPersonPointer;
     do{
-        printf("\n----------Menu Hashtable----------\n1 - Create Hashtable\n2 - Insert element\n3 - Print hashtable\n4 - Search for element\n5 - Delete element\n6 - Get size of hashtable\n7 - Free hashtable\n8 - Exit\n");
+        printf("\n----------Menu Hashtable----------\n1 - Create Hashtable\n2 - Insert element\n3 - Print hashtable\n4 - Search for element\n5 - Delete element\n6 - Get size of hashtable\n7 - Free hashtable\n8 - Exit\n9 - Change size");
         scanf("%d", &choice);
         
         switch (choice)
@@ -304,7 +411,16 @@ void menu(void)
             case 7:
                 freeHashTable(&htable);
                 break;
-                
+            case 9: // EXAMINATION
+                printf("Enter new size: ");
+                int newSize;
+                scanf("%d", &newSize);
+                int test = changeSize(&htable, newSize);
+                if (test)
+                    printf("\nError");
+                else
+                    printf("\nSuccess");
+                break;
             default: printf("Invalid input\n");
                 break;
         }

@@ -10,6 +10,11 @@
 #include "stack.h"
 #include "set.h"
 
+// EXAMINATION
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+
 /*Gor anrop i main till den meny du vill kora*/
 void menuQueue();
 void menuStack();
@@ -20,12 +25,83 @@ void testFunctionQueue();
 void testFunctionStack();
 void testFunctionSet();
 
+// EXAMINATION
+void calculatePostfixExpression(char str[]);
+
 int main(void)
 {
-    testFunctionQueue();
-    testFunctionStack();
-    testFunctionSet();
+    //testFunctionQueue();
+    //testFunctionStack();
+    //testFunctionSet();
+
+    // EXAMINATION
+    // Testar alla postfixa uttryck i tabellen
+    printf("Test: %s", "4 8 3 * +");
+    calculatePostfixExpression("4 8 3 * +");
+
+    printf("Test: %s", "4 8 + 3 *");
+    calculatePostfixExpression("4 8 + 3 *");
+
+    printf("Test: %s", "4 8 - 3 +");
+    calculatePostfixExpression("4 8 - 3 +");
+
+    printf("Test: %s", "8 4 / 3 +");
+    calculatePostfixExpression("8 4 / 3 +");
+
+    printf("Test: %s", "2 3 1 * + 9 -");
+    calculatePostfixExpression("2 3 1 * + 9 -");
+
+    printf("Test: %s", "6 2 / 1 2 + *");
+    calculatePostfixExpression("6 2 / 1 2 + *");
+
     return 0;
+}
+
+// EXAMINATION
+// Initierar en stack och loopar sedan igenom hela strängen med en for-loop.
+// Kollar först om indexet innehåller en siffra, isåfall ska den pushas till stacken.
+// Om det inte är en siffra kollar jag om det är en av operatörerna som ska hanteras,
+// isåfall poppas två från stacken, operatören utförs på dem och resultatet av detta pushas till stacken.
+// Om det varken är en operator eller en siffra kommer loopen hoppa vidare till nästa index.
+// När loopen har gått igenom hela strängen kommer stacken endast innehålla ett element, detta kan då poppas för att få slutresultatet.
+void calculatePostfixExpression(char str[])
+{
+    Stack myStack = initializeStack();
+    int len = strlen(str), result = 0, var1, var2;
+    for (int i = 0; i < len; i++)
+    {
+        if (isdigit(str[i]))
+        {
+            // Använder atoi för att konvertera char till int och pushar det till stacken
+            push(&myStack, atoi(&str[i]));
+
+            // Utifall ett tal som är större än 9 har pushats måste loopen flytta sig framåt till talets avslut
+            // Detta förutsätter att whitespace används för att skilja tal och operatorer åt
+            while (str[i] != ' ')
+                i++;
+        }
+        else if (str[i] == '*' || str[i] == '+' || str[i] == '-' || str[i] == '/')
+        {
+            // Poppar två, räknar ut resultated av operatorn på dessa och pushar resultatet till stacken
+
+            var1 = peekStack(myStack);
+            pop(&myStack);
+            var2 = peekStack(myStack);
+            pop(&myStack);
+            if (str[i] == '*')
+                result = var2 * var1;
+            else if (str[i] == '+')
+                result = var2 + var1;
+            else if (str[i] == '-')
+                result = var2 - var1;
+            else
+                result = var2 / var1;
+            push(&myStack, result);
+        }
+    }
+    result = peekStack(myStack);
+    pop(&myStack);
+    printf("\nResult: %d\n\n", result);
 }
 
 
